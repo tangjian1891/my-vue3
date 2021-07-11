@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script src="../node_modules/@vue/reactivity/dist/reactivity.global.js"></script>
+
+    <script>
+      let { reactive, effect } = VueReactivity;
+      let foo = reactive({ name: "zf", age: { n: 12 } });
+      debugger
+      effect(() => {
+        console.log("今天天气还不错啊啊");
+        // console.log(foo.name)
+        app.innerHTML = foo.name;
+      });
+      // setTimeout(() => {
+      //   // foo.name='变更了数据了了'
+      //   // foo
+      // }, 1000);
+    </script>
+  </body>
+</html>
