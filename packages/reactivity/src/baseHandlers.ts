@@ -25,24 +25,31 @@ export const mutableHandlers = {
   },
   set(target, key, value, receiver) {
     console.log("有获取值的啊", target, key, value);
-    let result = Reflect.set(target, key, value, receiver);
     const oldVale = target[key]; //老值
+   
     // 1.新增 2.修改 3.老值新值一样
     const hasOwnProperty = Object.prototype.hasOwnProperty;
-    // 是新增还是修改
 
-    if (Array.isArray(target)) {
-      let hadKey =
-        parseInt(key) + "" === key ? Number(key) < target.length : hasOwnProperty.call(target, key);
-      // 是否有值
-      if (!hadKey) {
-        // 新增
-        trigger(target, TriggerOrTypes.ADD, key, value);
-      } else if (oldVale !== value) {
-        // 修改
-        trigger(target, TriggerOrTypes.SET, key, value, oldVale);
-      }
+    // 是新增还是修改  需要判断是数组还是对象
+    // 既要是数组，也要key也要是数字类型的字符串擦性
+    let hadKey = false;
+    if (Array.isArray(target) && parseInt(key) + "" === key) {
+      hadKey = Number(key) < target.length;
+    } else {
+      hadKey = hasOwnProperty.call(target, key);
     }
+
+    let result = Reflect.set(target, key, value, receiver);
+    // 是否有值
+    if (!hadKey) {
+      // 新增
+      trigger(target, TriggerOrTypes.ADD, key, value);
+    } else if (oldVale !== value) {
+      // 修改
+      console.log("修改后触发了 ");
+      trigger(target, TriggerOrTypes.SET, key, value, oldVale);
+    }
+
     return result;
   },
 };

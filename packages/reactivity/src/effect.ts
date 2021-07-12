@@ -1,3 +1,5 @@
+import { TriggerOrTypes } from "./operators";
+
 export function effect(fn, options: any = {}) {
   // 我需要放这个effect变成effect，可以做到数据变化重新执行
 
@@ -55,8 +57,56 @@ export function track(target, type, key) {
   }
 }
 
+export function trigger(target, type, key?, newVal?, oldVale?) {
+  console.log(target, type, key, newVal, oldVale);
+  console.log("触发啊啊啊啊啊");
+  // 如果这个属性没有收集过effect,那不需要做任何操作
+  let depsMap = targetMap.get(target);
+  // 如果没有依赖，直接跳过
+  if (!depsMap) {
+    return;
+  }
 
-
-export function trigger (target,type,key,newVal){
-
+  const effects = new Set(); //当前值变化的所有依赖全部收入
+  // 我要将所有的 要执行的effecct全部存到一个新的集合,一起执行
+  const add = (effectsToAdd) => {
+    if (effectsToAdd) {
+      // 依赖数组
+      effectsToAdd.forEach((effect) => {
+        effects.add(effect);
+      });
+    }
+  };
+  // 1. 看修改的是不是数组的长度,改长度影响很大
+  if (key === "length" && Array.isArray(target)) {
+    // 如果对应的长度有依赖收集需要更新
+    depsMap.forEach((dep, key) => {
+      console.log(depsMap, dep, key);
+      // 如果修改的是索引。 那么需要当前key值和现在的索引设值对比，arr.length=1
+      if (key === "length" || key > newVal) {
+        // 如果更改的长度，小于收集的索引，那么这个索引也需要触发effect重新执行
+        add(dep);
+      }
+    });
+  } else {
+    // 可能是对象。 收集过，直接触发
+    if (key !== undefined) {
+      add(depsMap.get(key));//如果是
+    }
+    // 如果修改数组中的 某一个索引 .添加的话
+    switch (type) {
+      case TriggerOrTypes.ADD: {
+        // 数组改的是索引
+        if (Array.isArray(target) && parseInt(key) + "" === key) {
+          add(depsMap.get("length")); //手动触发length 。正常收集时，会收集length
+        }
+      }
+    }
+  }
+  effects.forEach((effect: any) => effect());
+  // 寻找key
+  let dep = depsMap.get(key);
+  if (!dep) {
+    return;
+  }
 }

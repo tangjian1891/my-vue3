@@ -13,16 +13,17 @@
     <script>
       let { reactive, effect } = VueReactivity;
       let foo = reactive({ name: "zf", age: { n: 12 } });
-      debugger
+      let arr = reactive([1, 2, 3, 4, 5]);
       effect(() => {
         console.log("今天天气还不错啊啊");
         // console.log(foo.name)
         app.innerHTML = foo.name;
       });
-      // setTimeout(() => {
-      //   // foo.name='变更了数据了了'
-      //   // foo
-      // }, 1000);
+      setTimeout(() => {
+        foo.name = "变更了数据了了";
+        foo.qwer = "这是新增的数据啊";
+        arr[1]='这是级啊啊'
+      }, 1000);
     </script>
   </body>
 </html>
